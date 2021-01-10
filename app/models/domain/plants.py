@@ -1,9 +1,7 @@
 from models.domain import MongoModel
 from typing import Optional
 
-
-class Sensor(MongoModel):
-    name: str
+from models.domain.sensors import Sensor
 
 
 class Plant(MongoModel):
