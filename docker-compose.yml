@@ -1,0 +1,30 @@
+version: "3.5"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    entrypoint: ./docker/entrypoint.sh
+    ports:
+      - "${APP_PORT}:8000"
+    volumes:
+      - "./:/app"
+    networks:
+      - "dants-api"
+    depends_on:
+      - "db"
+  db:
+    image: "mongo"
+    ports:
+      - "${MONGODB_PORT}:27017"
+    volumes:
+      - "db:/data/db"
+    networks:
+      - "dants-api"
+
+networks:
+  dants-api:
+
+volumes:
+  db:
