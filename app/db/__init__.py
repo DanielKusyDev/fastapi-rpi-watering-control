@@ -18,7 +18,7 @@ class Mongo:
 
     def filter(self, **kwargs):
         cursor = self.collection.find(kwargs)
-        return cursor
+        return [cursor]
 
     def get_one(self, raise_404=True, **kwargs):
         if "_id" in kwargs and not isinstance(kwargs["_id"], ObjectId):
