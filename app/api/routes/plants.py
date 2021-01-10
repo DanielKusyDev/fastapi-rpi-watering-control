@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from api.dependencies.db import PaginationParams
 from db import Mongo
 from models.domain.plants import Plant
 from models.schemas import ListOfPlants, CreatePlantInput
@@ -9,10 +10,9 @@ db = Mongo("plants")
 
 
 @router.get(path="", response_model=ListOfPlants)
-async def get_plants_list():
-    plants_list = db.all()
-    ps = [Plant(name="Lemon", _id="5ffae88791e1b8e2b3fc3919") for i in range(10)]
-    return ListOfPlants(plants=ps)
+async def get_plants_list(pagination_params: PaginationParams = Depends(PaginationParams)):
+    results = pagination_params.paginate(db.all(apply=False), ListOfPlants)
+    return results
 
 
 @router.post(path="", response_model=Plant)
