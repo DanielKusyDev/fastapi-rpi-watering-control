@@ -13,12 +13,12 @@ class Mongo:
         self.db = getattr(client, MONGODB_CONFIG["db"])
         self.collection = getattr(self.db, collection_name)
 
-    def all(self):
-        return self.filter()
+    def all(self, apply=False):
+        return self.filter(apply)
 
-    def filter(self, **kwargs):
-        cursor = self.collection.find(kwargs)
-        return [cursor]
+    def filter(self, apply=False, **kwargs):
+        _cursor = self.collection.find(kwargs)
+        return _cursor if not apply else list(_cursor)
 
     def get_one(self, raise_404=True, **kwargs):
         if "_id" in kwargs and not isinstance(kwargs["_id"], ObjectId):

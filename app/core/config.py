@@ -40,3 +40,5 @@ MONGODB_CONFIG = {
     "password": cfg("MONGODB_PASSWORD", cast=str, default=""),
     "db": cfg("MONGODB_DB", cast=str)
 }
+
+DEFAULT_PAGINATION_SIZE = 50
