@@ -1,8 +1,10 @@
 import uvicorn
 from fastapi import FastAPI
+from pydantic import ValidationError
 from starlette.middleware.cors import CORSMiddleware
 
 from api.routes import router
+from api.errors import validation_error_handler
 from core.config import ALLOWED_HOSTS, DEBUG, PROJECT_NAME, API_PREFIX
 
 
@@ -16,6 +18,7 @@ def get_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    application.add_exception_handler(ValidationError, validation_error_handler)
     application.include_router(router, prefix=API_PREFIX)
     return application
 
