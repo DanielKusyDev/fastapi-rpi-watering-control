@@ -7,5 +7,9 @@ WORKDIR $APP_DIR
 
 RUN apt update
 
+RUN apt install -y gcc make
+
+RUN pip install -U setuptools
+
 COPY ./requirements.txt $APP_DIR/
-RUN pip install -q -r requirements.txt
+RUN pip3 install -r requirements.txt
