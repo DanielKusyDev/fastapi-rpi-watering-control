@@ -16,5 +16,5 @@ class PaginationParams:
         skip_by = (self.page - 1) * self.page_size
         cursor = db.limit(self.page_size).skip(skip_by)
         results = list(cursor)
-        instance = response_class(results=results, count=len(results), next="a")
+        instance = response_class(results=results, count=len(results), page=self.page)
         return instance

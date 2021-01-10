@@ -34,9 +34,11 @@ class OID(str):
     @classmethod
     def validate(cls, v):
         try:
-            return ObjectId(str(v))
+            ObjectId(str(v))
         except InvalidId:
             raise ValueError("Not a valid ObjectId")
+        else:
+            return v
 
 
 class MongoModel(BaseModel):
@@ -46,4 +48,10 @@ class MongoModel(BaseModel):
             datetime.datetime: convert_datetime_to_realworld
         }
 
-    _id: OID = Field()
+    id: OID = Field()
+
+    def __init__(self, **kwargs):
+        if "_id" in kwargs:
+            kwargs["id"] = str(kwargs["_id"])
+            del kwargs["_id"]
+        super().__init__(**kwargs)
