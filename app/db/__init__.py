@@ -1,4 +1,5 @@
-from bson import SON
+from bson import SON, ObjectId
+from fastapi import HTTPException
 from pymongo import MongoClient
 
 from core.config import MONGODB_CONFIG
@@ -13,15 +14,19 @@ class Mongo:
         self.collection = getattr(self.db, collection_name)
 
     def all(self):
-        return self.filter()A
+        return self.filter()
 
     def filter(self, **kwargs):
         cursor = self.collection.find(kwargs)
         return cursor
 
     def get_one(self, raise_404=True, **kwargs):
-        selection_fn = self.collection.find_one_or_404 if raise_404 else self.collection.find_one
-        return selection_fn(kwargs)
+        if "_id" in kwargs and not isinstance(kwargs["_id"], ObjectId):
+            kwargs["_id"] = ObjectId(kwargs["_id"])
+        result = self.collection.find_one(kwargs)
+        if not result and raise_404:
+            raise HTTPException(status_code=404)
+        return result
 
     def insert(self, many=False, **data):
         insertion_fn = self.collection.insert_many if many else self.collection.insert_one
