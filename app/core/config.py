@@ -6,7 +6,7 @@ from loguru import logger
 from starlette.config import Config
 from starlette.datastructures import CommaSeparatedStrings, Secret
 
-from core.logging import InterceptHandler
+from app.core.logging import InterceptHandler
 
 API_PREFIX = "/api"
 
@@ -33,12 +33,11 @@ for logger_name in LOGGERS:
 logger.configure(handlers=[{"sink": sys.stderr, "level": LOGGING_LEVEL}])
 
 # Database
-MONGODB_CONFIG = {
-    "url": cfg("MONGODB_URL", cast=str),
-    "port": cfg("MONGODB_PORT", cast=int),
-    "user": cfg("MONGODB_USER", cast=str, default=""),
-    "password": cfg("MONGODB_PASSWORD", cast=str, default=""),
-    "db": cfg("MONGODB_DB", cast=str)
-}
+MYSQL_HOST = cfg("MYSQL_HOST", cast=str)
+MYSQL_PORT = cfg("MYSQL_PORT", cast=int)
+MYSQL_USER = cfg("MYSQL_USER", cast=str, default="")
+MYSQL_PASSWORD = cfg("MYSQL_PASSWORD", cast=str, default="")
+MYSQL_DB = cfg("MYSQL_DB", cast=str)
+
 
 DEFAULT_PAGINATION_SIZE = 50

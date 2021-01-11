@@ -14,6 +14,10 @@ FastAPI API for Raspberry Pi plants watering control system.
  - Start MongoDB service
  - Move to `app` directory
  - Run `main.py`
+ - Migrate db
+```
+ alembic upgrade head
+```
 
 #### Run via Docker
  - Set docker-compose environment variables 

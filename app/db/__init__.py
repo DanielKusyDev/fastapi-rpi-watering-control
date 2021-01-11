@@ -1,79 +1,9 @@
-from bson import SON, ObjectId
-from fastapi import HTTPException
-from pymongo import MongoClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-from core.config import MONGODB_CONFIG
+from app.core.config import MYSQL_PASSWORD, MYSQL_DB, MYSQL_HOST, MYSQL_PORT, MYSQL_USER
 
-client = MongoClient(host=MONGODB_CONFIG["url"], port=MONGODB_CONFIG["port"])
+SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
 
-
-class Mongo:
-    def __init__(self, collection_name: str):
-        self.collection_name = collection_name
-        self.db = getattr(client, MONGODB_CONFIG["db"])
-        self.collection = getattr(self.db, collection_name)
-
-    def all(self, apply=False):
-        return self.filter(apply)
-
-    def filter(self, apply=False, **kwargs):
-        _cursor = self.collection.find(kwargs)
-        return _cursor if not apply else list(_cursor)
-
-    def get_one(self, raise_404=True, **kwargs):
-        if "_id" in kwargs and not isinstance(kwargs["_id"], ObjectId):
-            kwargs["_id"] = ObjectId(kwargs["_id"])
-        result = self.collection.find_one(kwargs)
-        if not result and raise_404:
-            raise HTTPException(status_code=404)
-        return result
-
-    def insert(self, many=False, **data):
-        insertion_fn = self.collection.insert_many if many else self.collection.insert_one
-        _id = insertion_fn(data).inserted_id
-        return str(_id)
-
-    def update(self, data: dict, many=False, **filters):
-        update_fn = self.collection.update_many if many else self.collection.update_one
-        update_fn(filters, {"$set": data})
-        return data
-
-    def delete(self, many=False, **kwargs):
-        delete_fn = self.collection.delete_many if many else self.collection.delete_one
-        delete_fn(kwargs)
-        return kwargs
-
-    def aggregate(self, pipeline, evaluate=True):
-        result = self.collection.aggregate(pipeline)
-        return list(result) if evaluate else result
-
-    def count(self):
-        return self.collection.count()
-
-
-class AggregationPipeline:
-    def __init__(self):
-        self.pipeline = []
-
-    def add_projection(self, **kwargs):
-        projection = {"$project": {}}
-        for key, value in kwargs.items():
-            projection["$project"][key] = value
-        self.pipeline.append(projection)
-
-    def add_match(self, **kwargs):
-        match = {"$match": {}}
-        for key, value in kwargs.items():
-            match["$match"][key] = value
-        self.pipeline.append(match)
-
-    def add_group(self, **kwargs):
-        grouping = {"$group": {}}
-        for key, value in kwargs.items():
-            grouping["$group"][key] = value
-        self.pipeline.append(grouping)
-
-    def add_sorting(self, order_by: list):
-        ordering = [(field, 1) for field in order_by]
-        sorting = {"$sort": SON(ordering)}
-        return sorting
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

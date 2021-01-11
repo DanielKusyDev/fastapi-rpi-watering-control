@@ -15,9 +15,9 @@ services:
     depends_on:
       - "db"
   db:
-    image: "mongo"
+    image: "mysql"
     ports:
-      - "${MONGODB_PORT}:27017"
+      - "${MYSQL_PORT}:3306"
     volumes:
       - "db:/data/db"
     networks:
