@@ -1,7 +1,11 @@
 from typing import Optional
 
-# from db.models import Plant, Sensor
 from schemas import Schema, DbSchemaMixin
+
+
+class CreateResponse(Schema):
+    id: int
+    url: str = ""
 
 
 class PaginatedResponse(Schema):

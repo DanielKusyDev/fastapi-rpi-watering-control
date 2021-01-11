@@ -1,8 +1,9 @@
+import datetime
+
 from sqlalchemy import Column, Integer, DateTime, String
 from sqlalchemy import ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.functions import now
 
 
 class BaseModelCls:
@@ -13,7 +14,7 @@ class BaseModelCls:
     __mapper_args__ = {'always_refresh': True}
 
     id = Column(Integer, primary_key=True, index=True)
-    add_date = Column(DateTime, default=now)
+    add_date = Column(DateTime, default=datetime.datetime.utcnow)
 
 
 Base = declarative_base(cls=BaseModelCls)
