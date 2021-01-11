@@ -21,7 +21,7 @@ class Schema(BaseModel):
         alias_generator = convert_field_to_camel_case
 
 
-class DbSchemaMixin:
+class DbSchema(Schema):
     id: int
     add_date: datetime.datetime
 

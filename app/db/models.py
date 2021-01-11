@@ -5,8 +5,10 @@ from sqlalchemy import ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship
 
+Base = declarative_base()
 
-class BaseModelCls:
+
+class ModelMixin:
     @declared_attr
     def __tablename__(cls):
         return cls.__name__.lower()
@@ -17,21 +19,17 @@ class BaseModelCls:
     add_date = Column(DateTime, default=datetime.datetime.utcnow)
 
 
-Base = declarative_base(cls=BaseModelCls)
-
-
-class Plant(Base):
-    id = Column(Integer, primary_key=True, index=True)
+class Plant(ModelMixin, Base):
     name = Column(String(256), index=True)
     sensor = relationship("Sensor", uselist=False, back_populates="plant")
 
 
-class Sensor(Base):
+class Sensor(ModelMixin, Base):
     name = Column(String(256), index=True)
     plant_id = Column(Integer, ForeignKey("plant.id"))
     plant = relationship("Plant", back_populates="sensor")
 
 
-class GpioInput(Base):
+class GpioInput(ModelMixin, Base):
     pin = Column(Integer, index=True, unique=True)
     state = Column(Boolean, default=False)

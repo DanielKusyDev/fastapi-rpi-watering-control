@@ -1,12 +1,13 @@
 from contextlib import contextmanager
-from functools import wraps
+from typing import List
 
+from fastapi import HTTPException
 from sqlalchemy.orm import Session, Query
 
 from api.dependencies import PaginationParams
 from app.db import models, SessionLocal
-from db.models import Plant, Base
-from schemas.sensors import PlantSchema
+from db.models import Plant, Base, Sensor, GpioInput
+from schemas.sensors import PlantSchema, SensorSchema
 
 
 def paginate(db: Query, pagination_params: PaginationParams):
@@ -38,15 +39,47 @@ def add_and_refresh(db: Session, instance: Base):
     return instance
 
 
-def get_plants_list(pagination_params: PaginationParams = None):
+def all(cls: Base, pagination_params: PaginationParams = None) -> List[Base]:
     with session_scope() as db:
-        q = db.query(models.Plant)
+        q = db.query(cls)
         plants = paginate(q, pagination_params)
     return plants
 
 
-def create_plant(data: PlantSchema):
+def get_plants_list(pagination_params: PaginationParams = None) -> List[Plant]:
+    return all(models.Plant, pagination_params)
+
+
+def create_plant(data: PlantSchema) -> Plant:
     with session_scope() as db:
         plant = Plant(name=data.name)
         plant = add_and_refresh(db, plant)
     return plant
+
+
+def get_sensors_list(pagination_params: PaginationParams = None) -> List[models.Sensor]:
+    return all(models.Sensor, pagination_params)
+
+
+def create_sensor(data: SensorSchema) -> Sensor:
+    with session_scope() as db:
+        sensor = Sensor(name=data.name)
+        sensor = add_and_refresh(db, sensor)
+    return sensor
+
+
+def get_gpio_inputs() -> List[GpioInput]:
+    return all(GpioInput)
+
+
+def assign_sensor_to_plant(sensor_id: int, plant_id: int):
+    with session_scope() as db:
+        sensor = db.query(Sensor).filter(Sensor.id == sensor_id).first()
+        plant = db.query(Plant).filter(Plant.id == plant_id).first()
+        if sensor and plant:
+            sensor.plant_id = plant_id
+            db.commit()
+            db.refresh(sensor)
+        else:
+            raise HTTPException(status_code=404)
+    return sensor

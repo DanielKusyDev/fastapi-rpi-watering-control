@@ -1,6 +1,9 @@
 from typing import Optional
 
-from schemas import Schema, DbSchemaMixin
+from fastapi import Query
+
+from db.models import Plant
+from schemas import Schema, DbSchema
 
 
 class CreateResponse(Schema):
@@ -16,7 +19,11 @@ class PaginatedResponse(Schema):
 
 class SensorSchema(Schema):
     name: str
-    plant_id: Optional[int] = None
+
+
+class DbSensorSchema(DbSchema):
+    name: str
+    plant_id: Optional[int]
 
 
 class PlantSchema(Schema):
@@ -28,13 +35,6 @@ class GpioSchema(Schema):
     state: bool
 
 
-class DbGpioSchema(DbSchemaMixin, GpioSchema):
-    pass
-
-
-class DbSensorSchema(DbSchemaMixin, SensorSchema):
-    plant: Optional["DbPlantSchema"] = None
-
-
-class DbPlantSchema(DbSchemaMixin, PlantSchema):
-    sensor: Optional["DbSensorSchema"] = None
+class DbGpioSchema(DbSchema):
+    pin: int
+    state: bool
