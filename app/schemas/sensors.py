@@ -1,9 +1,8 @@
-from typing import Optional
-
-from fastapi import Query
+from typing import Optional, List, Any
 
 from db.models import Plant
 from schemas import Schema, DbSchema
+from pydantic import AnyUrl
 
 
 class CreateResponse(Schema):
@@ -14,27 +13,46 @@ class CreateResponse(Schema):
 class PaginatedResponse(Schema):
     page: int
     count: int
-    results: list = []
+    results: List[Any] = []
+
+    def to_schema(self, schema_cls):
+        schema_results = []
+        for obj in self.results:
+            schema_results.append(schema_cls(**obj.__dict__))
+        return self
 
 
-class SensorSchema(Schema):
+class SensorInput(Schema):
     name: str
 
 
-class DbSensorSchema(DbSchema):
+class SensorSchema(DbSchema):
     name: str
     plant_id: Optional[int]
 
 
-class PlantSchema(Schema):
+class PlantInput(Schema):
     name: str
 
 
-class GpioSchema(Schema):
+class PlantSchemaWithoutSensor(DbSchema):
+    name: str
+
+
+class PlantSchema(PlantSchemaWithoutSensor):
+    sensor: Optional[SensorSchema]
+
+
+class GpioInput(Schema):
     pin: int
     state: bool
 
 
-class DbGpioSchema(DbSchema):
+class GpioSchema(DbSchema):
     pin: int
     state: bool
+
+
+class AssigningSchema(Schema):
+    sensor: AnyUrl
+    plant: AnyUrl

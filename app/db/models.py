@@ -21,7 +21,7 @@ class ModelMixin:
 
 class Plant(ModelMixin, Base):
     name = Column(String(256), index=True)
-    sensor = relationship("Sensor", uselist=False, back_populates="plant")
+    sensor = relationship("Sensor", uselist=False, back_populates="plant", lazy='subquery')
 
 
 class Sensor(ModelMixin, Base):

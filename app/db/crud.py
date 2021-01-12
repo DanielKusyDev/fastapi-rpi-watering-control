@@ -3,83 +3,113 @@ from typing import List
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, Query
+from sqlalchemy.orm.exc import NoResultFound
 
 from api.dependencies import PaginationParams
 from app.db import models, SessionLocal
-from db.models import Plant, Base, Sensor, GpioInput
-from schemas.sensors import PlantSchema, SensorSchema
+from schemas.sensors import PlantInput, SensorInput
 
 
-def paginate(db: Query, pagination_params: PaginationParams):
-    if pagination_params is not None:
-        offset = (pagination_params.page - 1) * pagination_params.page_size
-        return db.offset(offset).limit(pagination_params.page_size).all()
-    return db
+class DbHelper:
+
+    @classmethod
+    @contextmanager
+    def session_scope(cls) -> Session:
+        """Provide a transactional scope around a series of operations."""
+        session = SessionLocal()
+        session.expire_on_commit = False
+        try:
+            yield session
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
+    @classmethod
+    def paginate(cls, db: Query, pagination_params: PaginationParams):
+        if pagination_params is not None:
+            offset = (pagination_params.page - 1) * pagination_params.page_size
+            return db.offset(offset).limit(pagination_params.page_size)
+        return db
+
+    @classmethod
+    def add_and_refresh(cls, db: Session, instance: models.Base):
+        db.add(instance)
+        db.commit()
+        db.refresh(instance)
+        return instance
+
+    @classmethod
+    def all(cls, *args, pagination_params: PaginationParams = None) -> Query:
+        with cls.session_scope() as db:
+            q = db.query(*args)
+            db = cls.paginate(q, pagination_params)
+        return db
 
 
-@contextmanager
-def session_scope() -> Session:
-    """Provide a transactional scope around a series of operations."""
-    session = SessionLocal()
-    session.expire_on_commit = False
-    try:
-        yield session
-        session.commit()
-    except:
-        session.rollback()
-        raise
-    finally:
-        session.close()
+def get_plants_list(pagination_params: PaginationParams = None) -> List[models.Plant]:
+    with DbHelper.session_scope() as db:
+        q = db.query(models.Plant).join()
+        q = DbHelper.paginate(q, pagination_params)
+    return q.all()
 
 
-def add_and_refresh(db: Session, instance: Base):
-    db.add(instance)
-    db.commit()
-    db.refresh(instance)
-    return instance
-
-
-def all(cls: Base, pagination_params: PaginationParams = None) -> List[Base]:
-    with session_scope() as db:
-        q = db.query(cls)
-        plants = paginate(q, pagination_params)
-    return plants
-
-
-def get_plants_list(pagination_params: PaginationParams = None) -> List[Plant]:
-    return all(models.Plant, pagination_params)
-
-
-def create_plant(data: PlantSchema) -> Plant:
-    with session_scope() as db:
-        plant = Plant(name=data.name)
-        plant = add_and_refresh(db, plant)
+def create_plant(data: PlantInput) -> models.Plant:
+    with DbHelper.session_scope() as db:
+        plant = models.Plant(name=data.name)
+        plant = DbHelper.add_and_refresh(db, plant)
     return plant
 
 
 def get_sensors_list(pagination_params: PaginationParams = None) -> List[models.Sensor]:
-    return all(models.Sensor, pagination_params)
+    with DbHelper.session_scope() as db:
+        q = db.query(models.Sensor).join()
+        q = DbHelper.paginate(q, pagination_params)
+    return q.all()
 
 
-def create_sensor(data: SensorSchema) -> Sensor:
-    with session_scope() as db:
-        sensor = Sensor(name=data.name)
-        sensor = add_and_refresh(db, sensor)
+def get_sensor(sensor_id: int) -> models.Sensor:
+    with DbHelper.session_scope() as db:
+        try:
+            sensor = db.query(models.Sensor).filter_by(id=sensor_id).one()
+        except NoResultFound:
+            raise HTTPException(404)
     return sensor
 
 
-def get_gpio_inputs() -> List[GpioInput]:
-    return all(GpioInput)
+def get_plant(plant_id: int) -> models.Plant:
+    with DbHelper.session_scope() as db:
+        try:
+            sensor = db.query(models.Plant).join().filter_by(id=plant_id).one()
+        except NoResultFound:
+            raise HTTPException(404)
+        return sensor
+
+
+def create_sensor(data: SensorInput) -> models.Sensor:
+    with DbHelper.session_scope() as db:
+        sensor = models.Sensor(name=data.name)
+        sensor = DbHelper.add_and_refresh(db, sensor)
+    return sensor
+
+
+def get_gpio_inputs() -> List[models.GpioInput]:
+    db = DbHelper.all(models.GpioInput)
+    result = db.all()
+    return result
 
 
 def assign_sensor_to_plant(sensor_id: int, plant_id: int):
-    with session_scope() as db:
-        sensor = db.query(Sensor).filter(Sensor.id == sensor_id).first()
-        plant = db.query(Plant).filter(Plant.id == plant_id).first()
-        if sensor and plant:
+    with DbHelper.session_scope() as db:
+        try:
+            sensor = db.query(models.Sensor).filter(models.Sensor.id == sensor_id).one()
+            db.query(models.Plant).filter(models.Plant.id == plant_id).one()
             sensor.plant_id = plant_id
             db.commit()
             db.refresh(sensor)
-        else:
+
+        except NoResultFound:
             raise HTTPException(status_code=404)
     return sensor
