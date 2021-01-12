@@ -10,5 +10,6 @@ router = APIRouter()
 
 @router.get(path="", response_model=List[GpioSchema])
 def get_gpio_pins():
-    gpio = crud.get_gpio_inputs()
-    return gpio
+    inputs = crud.get_gpio_inputs()
+    result = [GpioSchema(pin=gpio.pin, state=gpio.state) for gpio in inputs]
+    return result
