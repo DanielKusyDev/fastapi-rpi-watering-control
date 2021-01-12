@@ -117,7 +117,7 @@ def assign_sensor_to_plant(sensor_id: int, plant_id: int):
     return sensor
 
 
-def set_sensor_state(channel):
+def set_sensor_state(channel: int, state: bool):
     with DbHelper.session_scope() as db:
         try:
             gpio_input: models.GpioInput = db.query(models.GpioInput).filter_by(pin=channel).one()
@@ -125,5 +125,5 @@ def set_sensor_state(channel):
             logging.error(e)
             raise e
         else:
-            gpio_input.state = GPIO.input(channel)
+            gpio_input.state = state
             db.commit()

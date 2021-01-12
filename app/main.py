@@ -11,8 +11,10 @@ from db import engine, crud
 from db.models import Base
 
 
-def on_sensor_state_change(channel):
-    crud.set_sensor_state(channel)
+def on_moisture_sensor_state_change(channel):
+    # sensor has detected water when edge is failing so let's reverse it
+    state = not GPIO.input(channel)
+    crud.set_sensor_state(channel, state)
 
 
 def get_application() -> FastAPI:
@@ -39,7 +41,7 @@ async def initialize_gpio():
     GPIO.setmode(GPIO_MODE)
     GPIO.setup(GPIO_DIGITAL_OUT, GPIO.IN)
     GPIO.add_event_detect(GPIO_DIGITAL_OUT, GPIO.BOTH, bouncetime=300)
-    GPIO.add_event_callback(GPIO_DIGITAL_OUT, on_sensor_state_change)
+    GPIO.add_event_callback(GPIO_DIGITAL_OUT, on_moisture_sensor_state_change)
 
 
 if __name__ == "__main__":
