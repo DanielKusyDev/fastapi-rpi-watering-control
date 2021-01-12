@@ -12,7 +12,7 @@ from db.models import Base
 
 
 def on_moisture_sensor_state_change(channel):
-    # sensor has detected water when edge is failing so let's reverse it
+    # sensor detects water when edge is failing so let's reverse it
     state = not GPIO.input(channel)
     crud.set_sensor_state(channel, state)
 
