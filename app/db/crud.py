@@ -1,9 +1,11 @@
+import logging
 from contextlib import contextmanager
 from typing import List
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, Query
 from sqlalchemy.orm.exc import NoResultFound
+import RPi.GPIO as GPIO
 
 from api.dependencies import PaginationParams
 from app.db import models, SessionLocal
@@ -113,3 +115,15 @@ def assign_sensor_to_plant(sensor_id: int, plant_id: int):
         except NoResultFound:
             raise HTTPException(status_code=404)
     return sensor
+
+
+def set_sensor_state(channel):
+    with DbHelper.session_scope() as db:
+        try:
+            gpio_input: models.GpioInput = db.query(models.GpioInput).filter_by(pin=channel).one()
+        except BaseException as e:
+            logging.error(e)
+            raise e
+        else:
+            gpio_input.state = GPIO.input(channel)
+            db.commit()

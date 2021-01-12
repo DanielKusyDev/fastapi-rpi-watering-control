@@ -5,7 +5,7 @@ from typing import List
 from loguru import logger
 from starlette.config import Config
 from starlette.datastructures import CommaSeparatedStrings, Secret
-
+import RPi.GPIO as gpio
 from app.core.logging import InterceptHandler
 
 API_PREFIX = "/api"
@@ -39,5 +39,9 @@ MYSQL_USER = cfg("MYSQL_USER", cast=str, default="")
 MYSQL_PASSWORD = cfg("MYSQL_PASSWORD", cast=str, default="")
 MYSQL_DB = cfg("MYSQL_DB", cast=str)
 
-
+# Api
 DEFAULT_PAGINATION_SIZE = 50
+
+# RPi
+GPIO_MODE = gpio.BCM
+AGPIO_DIGITAL_OUT = 17
