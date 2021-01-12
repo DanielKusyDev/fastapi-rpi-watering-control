@@ -1,4 +1,4 @@
-# dants-api
+# fastapi-rpi-watering-control
 FastAPI API for Raspberry Pi plants watering control system.
 
 ## Prerequisites
