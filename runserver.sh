@@ -1,7 +1,7 @@
 #!/bin/bash
 
-baseDir="~/Projects/fastapi-rpi-watering-control/app"
-source "~/.virtualenvs/plants/bin/activate"
+baseDir="/home/pi/Projects/fastapi-rpi-watering-control/app"
+source "/home/pi/.virtualenvs/plants/bin/activate"
 
 export PYTHONPATH="$baseDir"
 cd "$baseDir"
