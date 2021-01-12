@@ -31,5 +31,6 @@ class Sensor(ModelMixin, Base):
 
 
 class GpioInput(Base):
-    pin = Column(Integer, index=True, unique=True, primary_key=True)
-    state = Column(Boolean, default=False)
+    __tablename__ = "gpio_inputs"
+    pin = Column(Integer, index=True, unique=True, primary_key=True, autoincrement=False)
+    state = Column(Boolean, default=False, nullable=False)
