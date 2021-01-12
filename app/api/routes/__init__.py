@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.routes import plants, sensors, gpio
+from api.routes import plants, sensors, gpio
 
 router = APIRouter()
 

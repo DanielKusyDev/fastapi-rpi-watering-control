@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import RPi.GPIO as GPIO
 
 from api.dependencies import PaginationParams
-from app.db import models, SessionLocal
+from db import models, SessionLocal
 from schemas.sensors import PlantInput, SensorInput
 
 

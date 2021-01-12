@@ -6,7 +6,7 @@ from loguru import logger
 from starlette.config import Config
 from starlette.datastructures import CommaSeparatedStrings, Secret
 import RPi.GPIO as gpio
-from app.core.logging import InterceptHandler
+from core.logging import InterceptHandler
 
 API_PREFIX = "/api"
 
