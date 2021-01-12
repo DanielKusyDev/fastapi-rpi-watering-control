@@ -4,8 +4,7 @@ from starlette.requests import Request
 from api.dependencies import PaginationParams
 from db import crud
 from schemas import PaginatedResponse
-from schemas.sensors import CreateResponse, SensorInput, SensorSchema, PlantSchema, AssigningSchema, \
-    PlantSchemaWithoutSensor
+from schemas.sensors import CreateResponse, SensorInput, SensorSchema, AssigningSchema
 
 router = APIRouter()
 
@@ -33,6 +32,6 @@ async def get_sensor_details(sensor_id: int):
 async def assign_sensor_to_plant(request: Request, sensor_id: int, plant_id: int):
     plant = crud.assign_sensor_to_plant(sensor_id, plant_id)
     return {
-        "sensor": "asd",
-        "plant": "xd"
+        "sensor": request.url_for("get_sensor_details", sensor_id=sensor_id),
+        "plant": request.url_for("get_plant_details", plant_id=plant_id)
     }
