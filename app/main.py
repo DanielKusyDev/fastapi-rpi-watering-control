@@ -15,13 +15,6 @@ def on_sensor_state_change(channel):
     crud.set_sensor_state(channel)
 
 
-def initialize_GPIO():
-    GPIO.setmode(GPIO_MODE)
-    GPIO.setup(GPIO_DIGITAL_OUT, GPIO.IN)
-    GPIO.add_event_detect(GPIO_DIGITAL_OUT, GPIO.BOTH, bouncetime=300)
-    GPIO.add_event_callback(GPIO_DIGITAL_OUT, on_sensor_state_change)
-
-
 def get_application() -> FastAPI:
     application = FastAPI(title=PROJECT_NAME, debug=DEBUG)
 
@@ -39,7 +32,15 @@ def get_application() -> FastAPI:
 
 Base.metadata.create_all(bind=engine)
 app = get_application()
-initialize_GPIO()
+
+
+@app.on_event("startup")
+async def initialize_gpio():
+    GPIO.setmode(GPIO_MODE)
+    GPIO.setup(GPIO_DIGITAL_OUT, GPIO.IN)
+    GPIO.add_event_detect(GPIO_DIGITAL_OUT, GPIO.BOTH, bouncetime=300)
+    GPIO.add_event_callback(GPIO_DIGITAL_OUT, on_sensor_state_change)
+
 
 if __name__ == "__main__":
     try:
