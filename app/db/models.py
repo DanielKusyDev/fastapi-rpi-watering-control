@@ -30,6 +30,6 @@ class Sensor(ModelMixin, Base):
     plant = relationship("Plant", back_populates="sensor")
 
 
-class GpioInput(ModelMixin, Base):
-    pin = Column(Integer, index=True, unique=True)
+class GpioInput(Base):
+    pin = Column(Integer, index=True, unique=True, primary_key=True)
     state = Column(Boolean, default=False)
