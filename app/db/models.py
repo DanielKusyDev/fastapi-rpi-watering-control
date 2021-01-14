@@ -34,3 +34,4 @@ class GpioInput(Base):
     __tablename__ = "gpio_inputs"
     pin = Column(Integer, index=True, unique=True, primary_key=True, autoincrement=False)
     state = Column(Boolean, default=False, nullable=False)
+    description = Column(String(1054), nullable=True)

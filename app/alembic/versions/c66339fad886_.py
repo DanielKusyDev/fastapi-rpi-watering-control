@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 5045e30cd536
+Revision ID: c66339fad886
 Revises: 
-Create Date: 2021-01-12 19:39:03.385625
+Create Date: 2021-01-14 20:18:04.582404
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5045e30cd536'
+revision = 'c66339fad886'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,6 +21,7 @@ def upgrade():
     op.create_table('gpio_inputs',
     sa.Column('pin', sa.Integer(), autoincrement=False, nullable=False),
     sa.Column('state', sa.Boolean(), nullable=False),
+    sa.Column('description', sa.String(length=1054), nullable=True),
     sa.PrimaryKeyConstraint('pin')
     )
     op.create_index(op.f('ix_gpio_inputs_pin'), 'gpio_inputs', ['pin'], unique=True)
