@@ -9,9 +9,9 @@ FastAPI API for Raspberry Pi plants watering control system.
 ### Getting started
  - Copy `app/core/.env.example` to `app/core/.env` file and fill it with data
  - Start MySql
- - Move to `app` directory
- - Run `main.py`
- - Migrate db
+ - Migrate db and run server
 ```
- alembic upgrade head
+cd app
+alembic upgrade head
+python main.py
 ```
