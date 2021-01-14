@@ -132,3 +132,5 @@ dmypy.json
 
 # JetBrains
 .idea
+
+./app/RPi/*
