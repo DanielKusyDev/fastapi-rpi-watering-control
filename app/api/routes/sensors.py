@@ -17,9 +17,12 @@ async def get_sensors_list(pagination_params: PaginationParams = Depends(Paginat
 
 
 @router.post(path="", response_model=CreateResponse, status_code=201)
-async def add_sensor(sensor: SensorInput):
+async def add_sensor(request: Request, sensor: SensorInput):
     db_sensor = crud.create_sensor(sensor)
-    return CreateResponse(id=db_sensor.id)
+    return {
+        "id": db_sensor.id,
+        "url": request.url_for("get_sensor_details", sensor_id=db_sensor.id)
+    }
 
 
 @router.get(path="/{sensor_id}", response_model=SensorSchema)

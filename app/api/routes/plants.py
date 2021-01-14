@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from starlette.requests import Request
 
 from api.dependencies import PaginationParams
 from db import crud
@@ -15,9 +16,12 @@ async def get_plants_list_req(pagination_params: PaginationParams = Depends(Pagi
 
 
 @router.post(path="", response_model=CreateResponse, status_code=201)
-async def add_plant(plant: PlantInput):
+async def add_plant(request: Request, plant: PlantInput):
     db_plant = crud.create_plant(plant)
-    return CreateResponse(id=db_plant.id)
+    return {
+        "id": db_plant.id,
+        "url": request.url_for("get_sensor_details", sensor_id=db_plant.id)
+    }
 
 
 @router.get(path="/{plant_id}", response_model=PlantSchema)
