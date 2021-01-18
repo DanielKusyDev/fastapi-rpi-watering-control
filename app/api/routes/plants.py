@@ -25,6 +25,6 @@ async def add_plant(request: Request, plant: PlantInput):
 
 
 @router.get(path="/{plant_id}", response_model=PlantSchema)
-async def get_plant_details(sensor_id: int):
-    plant = crud.get_plant(sensor_id)
+async def get_plant_details(plant_id: int):
+    plant = crud.get_plant(plant_id)
     return plant
