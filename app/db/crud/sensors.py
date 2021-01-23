@@ -40,7 +40,7 @@ def assign_sensor_to_plant(sensor_id: int, plant_id: int):
 def set_sensor_state(channel: int, state: bool):
     with Connection.session_scope() as db:
         try:
-            gpio_input: models.GpioInput = db.query(models.GpioInput).filter_by(pin=channel).one()
+            gpio_input: models.Gpio = db.query(models.Gpio).filter_by(pin=channel).one()
         except BaseException as e:
             logging.error(e)
             raise e

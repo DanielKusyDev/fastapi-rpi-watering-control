@@ -10,6 +10,7 @@ from api.errors import validation_error_handler
 from api.routes import router
 from core.config import ALLOWED_HOSTS, DEBUG, PROJECT_NAME, API_PREFIX, GPIO_MODE, GPIO_AVAILABLE_PINS
 from db import engine
+from db.crud.gpio import get_gpio_inputs
 from db.crud.sensors import set_sensor_state
 from db.models import Base
 
@@ -47,13 +48,13 @@ async def initialize_gpio():
     pins = get_gpio_inputs()
     GPIO.setmode(GPIO_MODE)
 
-    for gpio_input in pins:
-        if gpio_input not in GPIO_AVAILABLE_PINS:
-            logging.error(f"GPIO PIN #{gpio_input.pin} IS INVALID")
+    for gpio in pins:
+        if gpio not in GPIO_AVAILABLE_PINS:
+            logging.error(f"GPIO PIN #{gpio.pin} IS INVALID")
             exit(1)
-        GPIO.setup(gpio_input.pin, GPIO.IN)
-        GPIO.add_event_detect(gpio_input.pin, GPIO.BOTH, bouncetime=300)
-        GPIO.add_event_callback(GPIO_EVENTS_MAP[gpio_input.pin], on_moisture_sensor_state_change)
+        GPIO.setup(gpio.pin, GPIO.IN)
+        GPIO.add_event_detect(gpio.pin, GPIO.BOTH, bouncetime=300)
+        GPIO.add_event_callback(GPIO_EVENTS_MAP[gpio.pin], on_moisture_sensor_state_change)
 
 
 if __name__ == "__main__":
