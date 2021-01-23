@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm.exc import NoResultFound
 from starlette.requests import Request
 
 from api.dependencies import PaginationParams
-from db import crud
+from db.crud import plants as crud
 from schemas.sensors import PaginatedResponse, CreateResponse, PlantInput, PlantSchema
 
 router = APIRouter()
@@ -26,5 +27,8 @@ async def add_plant(request: Request, plant: PlantInput):
 
 @router.get(path="/{plant_id}", response_model=PlantSchema)
 async def get_plant_details(plant_id: int):
-    plant = crud.get_plant(plant_id)
+    try:
+        plant = crud.get_plant(plant_id)
+    except NoResultFound:
+        raise HTTPException(404)
     return plant

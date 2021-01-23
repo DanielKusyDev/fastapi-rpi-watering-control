@@ -9,15 +9,16 @@ import RPi.GPIO as GPIO
 from api.errors import validation_error_handler
 from api.routes import router
 from core.config import ALLOWED_HOSTS, DEBUG, PROJECT_NAME, API_PREFIX, GPIO_MODE, GPIO_AVAILABLE_PINS
-from db import engine, crud
-from db.crud import get_gpio_inputs
+from db import engine
+from db.crud.sensors import set_sensor_state
 from db.models import Base
 
 
 def on_moisture_sensor_state_change(channel):
     # sensor detects water when edge is failing so let's reverse it
     state = not GPIO.input(channel)
-    crud.set_sensor_state(channel, state)
+    set_sensor_state(channel, state)
+
 
 def get_application() -> FastAPI:
     application = FastAPI(title=PROJECT_NAME, debug=DEBUG)

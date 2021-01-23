@@ -1,8 +1,7 @@
 from fastapi import APIRouter
-from api.routes import plants, sensors, gpio
+from api.routes import plants, sensors
 
 router = APIRouter()
 
 router.include_router(plants.router, tags=["plants"], prefix="/plants")
 router.include_router(sensors.router, tags=["sensors"], prefix="/sensors")
-router.include_router(gpio.router, tags=["gpio"], prefix="/gpio")
