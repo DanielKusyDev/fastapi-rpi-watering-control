@@ -1,3 +1,4 @@
+import importlib
 import logging
 
 import uvicorn
@@ -13,6 +14,7 @@ from db import engine
 from db.crud.gpio import get_gpio_inputs
 from db.crud.sensors import set_sensor_state
 from db.models import Base
+from helpers.gpio import get_gpio_callback
 
 
 def on_moisture_sensor_state_change(channel):
@@ -47,14 +49,15 @@ app = get_application()
 async def initialize_gpio():
     pins = get_gpio_inputs()
     GPIO.setmode(GPIO_MODE)
-
     for gpio in pins:
         if gpio not in GPIO_AVAILABLE_PINS:
-            logging.error(f"GPIO PIN #{gpio.pin} IS INVALID")
+            logging.error(f"GPIO PIN #{gpio.channel} IS INVALID")
             exit(1)
-        GPIO.setup(gpio.pin, GPIO.IN)
-        GPIO.add_event_detect(gpio.pin, GPIO.BOTH, bouncetime=300)
-        GPIO.add_event_callback(GPIO_EVENTS_MAP[gpio.pin], on_moisture_sensor_state_change)
+        if gpio.callback:
+            callback = get_gpio_callback(gpio)
+            GPIO.setup(gpio.channel, GPIO.IN)
+            GPIO.add_event_detect(gpio.channel, GPIO.BOTH, bouncetime=300)
+            GPIO.add_event_callback(gpio.channel, callback)
 
 
 if __name__ == "__main__":

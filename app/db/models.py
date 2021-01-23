@@ -32,7 +32,7 @@ class Sensor(ModelMixin, Base):
 
 class Gpio(Base):
     __tablename__ = "gpios"
-    pin = Column(Integer, index=True, unique=True, primary_key=True, autoincrement=False)
+    channel = Column(Integer, index=True, unique=True, primary_key=True, autoincrement=False)
     state = Column(Boolean, default=False, nullable=False)
     description = Column(String(1054), nullable=True)
     callback = Column(String(1054), nullable=True)

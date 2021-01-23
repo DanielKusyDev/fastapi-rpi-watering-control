@@ -1,0 +1,2 @@
+def funkcja():
+    print("sukces")
