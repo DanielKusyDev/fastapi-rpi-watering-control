@@ -15,7 +15,12 @@ router = APIRouter()
 @router.get(path="", response_model=List[PlantSchema])
 async def get_plants_list_req(pagination_params: PaginationParams = Depends(PaginationParams)):
     plants = crud.get_plants_list(pagination_params)
-    # response = PaginatedResponse(page=pagination_params.page, count=len(plants), results=plants).to_schema(PlantSchema)
+    result = []
+    for i, plant in zip(range(len(plants)), plants):
+
+        schema_object = PlantSchema()
+        plants[i].water_level = plant.sensors.gpio.state
+
     return plants
 
 

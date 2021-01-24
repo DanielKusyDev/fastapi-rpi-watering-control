@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-from db.crud.sensors import set_gpio_pin_state
+from db.crud.gpio import set_gpio_pin_state
 
 
 def moisture_sensor_callback(channel):

@@ -1,9 +1,11 @@
 import datetime
+import enum
 
 from sqlalchemy import Column, Integer, DateTime, String
 from sqlalchemy import ForeignKey, Boolean
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import relationship
+from sqlalchemy_utils import ChoiceType
 
 Base = declarative_base()
 
@@ -19,6 +21,10 @@ class ModelMixin:
     add_date = Column(DateTime, default=datetime.datetime.utcnow)
 
 
+class SensorType(enum.Enum):
+    MOISTURE_SENSOR = "MOISTURE_SENSOR"
+
+
 class Plant(ModelMixin, Base):
     __tablename__ = "plants"
     name = Column(String(256), index=True)
@@ -28,6 +34,7 @@ class Plant(ModelMixin, Base):
 class Sensor(ModelMixin, Base):
     __tablename__ = "sensors"
     name = Column(String(256), index=True)
+    kind = Column(String, ChoiceType(SensorType, impl=String()))
     plant_id = Column(Integer, ForeignKey("plants.id"))
     gpio_id = Column(Integer, ForeignKey("gpios.channel"))
     plant = relationship("Plant")

@@ -13,11 +13,6 @@ def get_plants_list(pagination_params: PaginationParams = None) -> List[models.P
     return q.all()
 
 
-# def get_plants_with_sensors(pagination_params: PaginationParams = None) -> List[models.Plant]:
-#     with Connection.session_scope() as db:
-#         db.query
-
-
 def create_plant(data: PlantInput) -> models.Plant:
     with Connection.session_scope() as db:
         plant = models.Plant(name=data.name)
