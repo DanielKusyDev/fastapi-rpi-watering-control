@@ -1,11 +1,14 @@
+from typing import Dict
+
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic.networks import AnyUrl
 from sqlalchemy.orm.exc import NoResultFound
 from starlette.requests import Request
 
 from api.dependencies import PaginationParams
 from db.crud import sensors as crud
-from schemas import PaginatedResponse
-from schemas.sensors import CreateResponse, SensorInput, SensorSchema, AssigningSchema
+from schemas import PaginatedResponse, IdAndUrlSchema
+from schemas.sensors import SensorInput, SensorSchema
 
 router = APIRouter()
 
@@ -17,7 +20,7 @@ async def get_all_sensors(pagination_params: PaginationParams = Depends(Paginati
     return response
 
 
-@router.post(path="", response_model=CreateResponse, status_code=201)
+@router.post(path="", response_model=IdAndUrlSchema, status_code=201)
 async def add_new_sensor(request: Request, sensor: SensorInput):
     db_sensor = crud.create_sensor(sensor)
     return {
@@ -35,7 +38,7 @@ async def get_sensor_details(sensor_id: int):
     return sensor
 
 
-@router.put(path="/{sensor_id}/{plant_id}", response_model=AssigningSchema)
+@router.put(path="/{sensor_id}/{plant_id}", response_model=Dict[str, AnyUrl])
 async def assign_sensor_to_plant(request: Request, sensor_id: int, plant_id: int):
     try:
         crud.assign_sensor_to_plant(sensor_id, plant_id)

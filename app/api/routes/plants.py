@@ -1,22 +1,25 @@
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm.exc import NoResultFound
 from starlette.requests import Request
 
 from api.dependencies import PaginationParams
 from db.crud import plants as crud
-from schemas.sensors import PaginatedResponse, CreateResponse, PlantInput, PlantSchema
+from schemas import PaginatedResponse, IdAndUrlSchema
+from schemas.plants import PlantInput, PlantSchema
 
 router = APIRouter()
 
 
-@router.get(path="", response_model=PaginatedResponse)
+@router.get(path="", response_model=List[PlantSchema])
 async def get_plants_list_req(pagination_params: PaginationParams = Depends(PaginationParams)):
     plants = crud.get_plants_list(pagination_params)
-    response = PaginatedResponse(page=pagination_params.page, count=len(plants), results=plants).to_schema(PlantSchema)
-    return response
+    # response = PaginatedResponse(page=pagination_params.page, count=len(plants), results=plants).to_schema(PlantSchema)
+    return plants
 
 
-@router.post(path="", response_model=CreateResponse, status_code=201)
+@router.post(path="", response_model=IdAndUrlSchema, status_code=201)
 async def add_plant(request: Request, plant: PlantInput):
     db_plant = crud.create_plant(plant)
     return {

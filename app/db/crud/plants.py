@@ -3,7 +3,7 @@ from typing import List
 from api.dependencies import PaginationParams
 from db import models
 from db.crud import Connection
-from schemas.sensors import PlantInput
+from schemas.plants import PlantInput
 
 
 def get_plants_list(pagination_params: PaginationParams = None) -> List[models.Plant]:
@@ -11,6 +11,11 @@ def get_plants_list(pagination_params: PaginationParams = None) -> List[models.P
         q = db.query(models.Plant).join()
         q = Connection.paginate(q, pagination_params)
     return q.all()
+
+
+# def get_plants_with_sensors(pagination_params: PaginationParams = None) -> List[models.Plant]:
+#     with Connection.session_scope() as db:
+#         db.query
 
 
 def create_plant(data: PlantInput) -> models.Plant:

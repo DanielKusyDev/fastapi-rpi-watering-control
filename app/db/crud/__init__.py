@@ -1,14 +1,9 @@
-import logging
 from contextlib import contextmanager
-from typing import List
 
-from fastapi import HTTPException
 from sqlalchemy.orm import Session, Query
-from sqlalchemy.orm.exc import NoResultFound
 
 from api.dependencies import PaginationParams
 from db import models, SessionLocal
-from schemas.sensors import PlantInput, SensorInput
 
 
 class Connection:

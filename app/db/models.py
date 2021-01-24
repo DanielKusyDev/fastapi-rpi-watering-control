@@ -20,14 +20,16 @@ class ModelMixin:
 
 
 class Plant(ModelMixin, Base):
+    __tablename__ = "plants"
     name = Column(String(256), index=True)
-    sensor = relationship("Sensor", uselist=False, back_populates="plant", lazy='subquery')
+    sensors = relationship("Sensor", uselist=True, back_populates="plant", lazy='subquery')
 
 
 class Sensor(ModelMixin, Base):
+    __tablename__ = "sensors"
     name = Column(String(256), index=True)
-    plant_id = Column(Integer, ForeignKey("plant.id"))
-    plant = relationship("Plant", back_populates="sensor")
+    plant_id = Column(Integer, ForeignKey("plants.id"))
+    plant = relationship("Plant")
 
 
 class Gpio(Base):

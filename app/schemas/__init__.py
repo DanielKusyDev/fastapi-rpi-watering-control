@@ -1,4 +1,5 @@
 import datetime
+from typing import List, Any
 
 from pydantic import BaseModel, BaseConfig
 
@@ -32,4 +33,15 @@ class DbSchema(Schema):
 class PaginatedResponse(Schema):
     page: int
     count: int
-    results: list
+    results: List[Any] = []
+
+    def to_schema(self, schema_cls):
+        schema_results = []
+        for obj in self.results:
+            schema_results.append(schema_cls(**obj.__dict__))
+        return self
+
+
+class IdAndUrlSchema(Schema):
+    id: int
+    url: str = ""

@@ -1,12 +1,11 @@
-import importlib
 import logging
 
 import uvicorn
 from fastapi import FastAPI
 from pydantic import ValidationError
 from starlette.middleware.cors import CORSMiddleware
-import RPi.GPIO as GPIO
 
+import RPi.GPIO as GPIO
 from api.errors import validation_error_handler
 from api.routes import router
 from core.config import ALLOWED_HOSTS, DEBUG, PROJECT_NAME, API_PREFIX, GPIO_MODE, GPIO_AVAILABLE_PINS
@@ -50,7 +49,7 @@ async def initialize_gpio():
     pins = get_gpio_inputs()
     GPIO.setmode(GPIO_MODE)
     for gpio in pins:
-        if gpio not in GPIO_AVAILABLE_PINS:
+        if gpio.channel not in GPIO_AVAILABLE_PINS:
             logging.error(f"GPIO PIN #{gpio.channel} IS INVALID")
             exit(1)
         if gpio.callback:
