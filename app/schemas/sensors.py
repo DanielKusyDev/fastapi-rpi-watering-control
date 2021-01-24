@@ -7,6 +7,7 @@ from schemas import Schema, DbSchema
 
 class SensorInput(Schema):
     name: str
+    kind: str
 
 
 class SensorSchema(DbSchema):

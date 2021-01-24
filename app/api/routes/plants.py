@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm.exc import NoResultFound
 from starlette.requests import Request
@@ -12,15 +10,9 @@ from schemas.plants import PlantInput, PlantSchema
 router = APIRouter()
 
 
-@router.get(path="", response_model=List[PlantSchema])
+@router.get(path="")
 async def get_plants_list_req(pagination_params: PaginationParams = Depends(PaginationParams)):
     plants = crud.get_plants_list(pagination_params)
-    result = []
-    for i, plant in zip(range(len(plants)), plants):
-
-        schema_object = PlantSchema()
-        plants[i].water_level = plant.sensors.gpio.state
-
     return plants
 
 

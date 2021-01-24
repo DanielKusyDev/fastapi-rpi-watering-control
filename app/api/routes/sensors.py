@@ -6,11 +6,17 @@ from sqlalchemy.orm.exc import NoResultFound
 from starlette.requests import Request
 
 from api.dependencies import PaginationParams
+from db import models
 from db.crud import sensors as crud
 from schemas import IdAndUrlSchema
 from schemas.sensors import SensorInput, SensorSchema
 
 router = APIRouter()
+
+
+@router.get(path="/types", response_model=List[str])
+async def get_sensor_types():
+    return [e.value for e in models.SensorType]
 
 
 @router.get(path="", response_model=List[SensorSchema])

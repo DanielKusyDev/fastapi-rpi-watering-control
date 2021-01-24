@@ -34,7 +34,7 @@ class Plant(ModelMixin, Base):
 class Sensor(ModelMixin, Base):
     __tablename__ = "sensors"
     name = Column(String(256), index=True)
-    kind = Column(String, ChoiceType(SensorType, impl=String()))
+    kind = Column(String(256), ChoiceType(SensorType), nullable=False)
     plant_id = Column(Integer, ForeignKey("plants.id"))
     gpio_id = Column(Integer, ForeignKey("gpios.channel"))
     plant = relationship("Plant")

@@ -21,7 +21,7 @@ def get_sensor(sensor_id: int) -> models.Sensor:
 
 def create_sensor(data: SensorInput) -> models.Sensor:
     with Connection.session_scope() as db:
-        sensor = models.Sensor(name=data.name)
+        sensor = models.Sensor(name=data.name, kind=data.kind)
         sensor = Connection.add_and_refresh(db, sensor)
     return sensor
 
