@@ -10,16 +10,9 @@ from api.errors import validation_error_handler
 from api.routes import router
 from core.config import ALLOWED_HOSTS, DEBUG, PROJECT_NAME, API_PREFIX, GPIO_MODE, GPIO_AVAILABLE_PINS
 from db import engine
-from db.crud.gpio import get_gpio_inputs
-from db.crud.sensors import set_sensor_state
+from db.crud.gpio import get_gpio_pins
 from db.models import Base
 from helpers.gpio import get_gpio_callback
-
-
-def on_moisture_sensor_state_change(channel):
-    # sensor detects water when edge is failing so let's reverse it
-    state = not GPIO.input(channel)
-    set_sensor_state(channel, state)
 
 
 def get_application() -> FastAPI:
@@ -36,17 +29,13 @@ def get_application() -> FastAPI:
     application.include_router(router, prefix=API_PREFIX)
     return application
 
-
-GPIO_EVENTS_MAP = {
-    6: on_moisture_sensor_state_change
-}
 Base.metadata.create_all(bind=engine)
 app = get_application()
 
 
 @app.on_event("startup")
 async def initialize_gpio():
-    pins = get_gpio_inputs()
+    pins = get_gpio_pins()
     GPIO.setmode(GPIO_MODE)
     for gpio in pins:
         if gpio.channel not in GPIO_AVAILABLE_PINS:

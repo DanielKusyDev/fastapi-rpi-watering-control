@@ -1,4 +1,3 @@
-import logging
 from typing import List
 
 from api.dependencies import PaginationParams
@@ -37,13 +36,4 @@ def assign_sensor_to_plant(sensor_id: int, plant_id: int):
     return sensor
 
 
-def set_sensor_state(channel: int, state: bool):
-    with Connection.session_scope() as db:
-        try:
-            gpio_input: models.Gpio = db.query(models.Gpio).filter_by(pin=channel).one()
-        except BaseException as e:
-            logging.error(e)
-            raise e
-        else:
-            gpio_input.state = state
-            db.commit()
+
