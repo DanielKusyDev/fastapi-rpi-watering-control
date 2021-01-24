@@ -29,7 +29,9 @@ class Sensor(ModelMixin, Base):
     __tablename__ = "sensors"
     name = Column(String(256), index=True)
     plant_id = Column(Integer, ForeignKey("plants.id"))
+    gpio_id = Column(Integer, ForeignKey("gpios.channel"))
     plant = relationship("Plant")
+    gpio = relationship("Gpio")
 
 
 class Gpio(Base):

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic.networks import AnyUrl
@@ -7,17 +7,16 @@ from starlette.requests import Request
 
 from api.dependencies import PaginationParams
 from db.crud import sensors as crud
-from schemas import PaginatedResponse, IdAndUrlSchema
+from schemas import IdAndUrlSchema
 from schemas.sensors import SensorInput, SensorSchema
 
 router = APIRouter()
 
 
-@router.get(path="", response_model=PaginatedResponse)
+@router.get(path="", response_model=List[SensorSchema])
 async def get_all_sensors(pagination_params: PaginationParams = Depends(PaginationParams)):
     sensors = crud.get_sensors_list(pagination_params)
-    response = PaginatedResponse(page=pagination_params.page, count=len(sensors), results=sensors)
-    return response
+    return sensors
 
 
 @router.post(path="", response_model=IdAndUrlSchema, status_code=201)
