@@ -36,7 +36,7 @@ class Sensor(ModelMixin, Base):
     name = Column(String(256), index=True)
     kind = Column(String(256), ChoiceType(SensorType), nullable=False)
     plant_id = Column(Integer, ForeignKey("plants.id"))
-    gpio_id = Column(Integer, ForeignKey("gpios.channel"))
+    gpio_channel = Column(Integer, ForeignKey("gpios.channel"), unique=True)
     plant = relationship("Plant")
     gpio = relationship("Gpio")
 
@@ -47,3 +47,8 @@ class Gpio(Base):
     state = Column(Boolean, default=False, nullable=False)
     description = Column(String(1054), nullable=True)
     callback = Column(String(1054), nullable=True)
+
+
+class Error(ModelMixin, Base):
+    error = Column(String(1054), nullable=False)
+    type = Column(String(1054), nullable=False)

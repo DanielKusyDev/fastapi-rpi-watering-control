@@ -8,7 +8,7 @@ from schemas.plants import PlantInput
 
 def get_plants_list(pagination_params: PaginationParams = None) -> List[models.Plant]:
     with Connection.session_scope() as db:
-        q = db.query(models.Plant).join()
+        q = db.query(models.Plant).outerjoin(models.Sensor)
         q = Connection.paginate(q, pagination_params)
     return q.all()
 

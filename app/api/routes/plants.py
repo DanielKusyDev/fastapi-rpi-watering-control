@@ -4,7 +4,7 @@ from starlette.requests import Request
 
 from api.dependencies import PaginationParams
 from db.crud import plants as crud
-from schemas import PaginatedResponse, IdAndUrlSchema
+from schemas import IdAndUrlSchema
 from schemas.plants import PlantInput, PlantSchema
 
 router = APIRouter()
