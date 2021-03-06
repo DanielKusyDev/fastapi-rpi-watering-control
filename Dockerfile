@@ -20,3 +20,5 @@ COPY . .
 
 WORKDIR /usr/src/app/app
 ENV PYTHONPATH /usr/src/app/app
+
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
