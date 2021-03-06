@@ -10,7 +10,6 @@ FastAPI API for Raspberry Pi plants watering control system.
 
 ### Locally
  - Set environment variables used in `core/config.py`
- - Start MySql
  - Migrate db and run server
 ```
 cd app
