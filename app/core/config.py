@@ -9,17 +9,23 @@ import RPi.GPIO as GPIO
 from core.logging import InterceptHandler
 
 API_PREFIX = "/api"
+cfg = Config()
 
 # ENVS
-cfg = Config("./core/.env")
 DEBUG: bool = cfg("DEBUG", cast=bool, default=False)
 SECRET_KEY: Secret = cfg("SECRET_KEY", cast=Secret)
-PROJECT_NAME: str = cfg("PROJECT_NAME", cast=str)
+PROJECT_NAME: str = cfg("PROJECT_NAME", cast=str, default="Plants control")
 ALLOWED_HOSTS: List[str] = cfg(
     "ALLOWED_HOSTS",
     cast=CommaSeparatedStrings,
     default="",
 )
+DB_HOST = cfg("DB_HOST", cast=str)
+DB_PORT = cfg("DB_PORT", cast=int)
+DB_USER = cfg("DB_USER", cast=str, default="")
+DB_PASSWORD = cfg("DB_PASSWORD", cast=str, default="")
+DB_NAME = cfg("DB_NAME", cast=str)
+DB_DRIVER = cfg("DB_DRIVER", cast=str)
 
 # logging configuration
 LOGGING_LEVEL = logging.DEBUG if DEBUG else logging.INFO
@@ -32,18 +38,11 @@ for logger_name in LOGGERS:
 
 logger.configure(handlers=[{"sink": sys.stderr, "level": LOGGING_LEVEL}])
 
-# Database
-MYSQL_HOST = cfg("MYSQL_HOST", cast=str)
-MYSQL_PORT = cfg("MYSQL_PORT", cast=int)
-MYSQL_USER = cfg("MYSQL_USER", cast=str, default="")
-MYSQL_PASSWORD = cfg("MYSQL_PASSWORD", cast=str, default="")
-MYSQL_DB = cfg("MYSQL_DB", cast=str)
-
 # Api
 DEFAULT_PAGINATION_SIZE = 50
 
 # RPi
 GPIO_MODE = GPIO.BCM
-GPIO_AVAILABLE_PINS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]
+GPIO_AVAILABLE_PINS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+                       27]
 GPIO_CALLBACK_EVENT_MODULE = "app.core.callbacks"
-
