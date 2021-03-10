@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM arm32v7/python:3.8
 
 # set work directory
 WORKDIR /usr/src/app
@@ -21,4 +21,5 @@ COPY . .
 WORKDIR /usr/src/app/app
 ENV PYTHONPATH /usr/src/app/app
 
+RUN pip install RPi.GPIO
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
